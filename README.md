@@ -1,4 +1,6 @@
 herrkrueger.github.io
 =====================
 
-a test github page...
+my herrkrueger.github.io Pages for sharing and publishing miscellaneous stuff: slides, documents, articles, etc. 
+
+
