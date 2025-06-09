@@ -54,7 +54,8 @@ description: "Brief description for SEO and social sharing"
 ### Chirpy-Specific Features
 - **Table of Contents**: Automatically generated if post has headers
 - **Code Blocks**: Use fenced code blocks with language specification
-- **Images**: Place in `/images/` folder, reference as `/images/filename.jpg`
+- **Images**: Place in `/images/YYYY-MM-DD/` folder per post, reference as `/images/YYYY-MM-DD/filename.jpg`
+- **Files**: Place PDFs and documents in `/files/` with date prefix: `YYYY-MM-DD-filename.pdf`
 - **Math**: Supports MathJax for mathematical expressions
 - **Mermaid**: Supports diagrams and flowcharts
 
@@ -70,7 +71,10 @@ herrkrueger.github.io/
 │   ├── process_draft.py
 │   ├── validate_post.py
 │   └── publish_post.py
-├── images/               # Post images
+├── images/               # Post images organized by date
+│   ├── 2025-02-28/      # Images for Feb 28, 2025 post
+│   └── 2025-06-09/      # Images for Jun 9, 2025 post
+├── files/                # PDFs and documents with date prefixes
 └── CLAUDE.md            # This file
 ```
 
@@ -156,7 +160,7 @@ Before publishing, ensure:
 - **Bear Backups**: Keep original Bear notes as backup
 - **Git History**: All changes tracked in git repository
 - **Draft Preservation**: _drafts folder maintains work-in-progress posts
-- **Image Management**: All images committed to git for versioning
+- **Image Management**: All images organized by post date in `/images/YYYY-MM-DD/` folders and committed to git for versioning
 
 ---
 
