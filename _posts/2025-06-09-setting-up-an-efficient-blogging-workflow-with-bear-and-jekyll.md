@@ -3,7 +3,7 @@ author: Arne Krueger
 categories:
 - Development
 - Tools
-date: 2025-06-09 12:24:32 +0100
+date: 2025-06-09 10:00:00 +0100
 description: A blog post about setting up an efficient blogging workflow with bear
   and jekyll
 tags:
@@ -12,6 +12,7 @@ tags:
 - automation
 title: Setting Up an Efficient Blogging Workflow with Bear and Jekyll
 ---
+
 
 As a tech consultant running mtc.berlin, I needed a streamlined way to go from idea to published blog post. After trying various solutions, I've settled on a workflow that combines Bear for writing with Jekyll for publishing.
 
