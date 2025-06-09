@@ -1,5 +1,7 @@
 ---
-author: Arne Krueger
+author:
+  - Arne Krueger
+  - Claude
 categories:
 - Business
 - Technology

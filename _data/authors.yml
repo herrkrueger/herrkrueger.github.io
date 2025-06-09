@@ -1,18 +1,15 @@
 # Authors
 
-Name Name:
-  name        : "Name Name"
-  uri         : "http://name.com"
-  email       : "name@name.com"
-  bio         : "This is the first name."
-  avatar      : "bio-photo-2.jpg"
-  twitter     : "name"
-  google_plus : "Name"
+Arne Krueger:
+  name        : "Arne Krueger"
+  uri         : "https://mtc.berlin"
+  email       : "arne.krueger@mtc.berlin"
+  bio         : "Founder of mtc.berlin · info tech solution/service provider for major international corporations"
+  avatar      : "site-logo.png"
 
-Name2 Name2:
-  name        : "Name2 Name2"
-  email       : "name2@name2.com"
-  bio         : "I ordered what?"
-  avatar      : "bio-photo.jpg"
-  twitter     : "name2"
-  google_plus : "Name"
+Claude:
+  name        : "Claude (Sonnet 4)"
+  uri         : "https://claude.ai/code"
+  email       : "noreply@anthropic.com"
+  bio         : "AI assistant by Anthropic using Claude Code in VS Code, helping with content creation and technical tasks"
+  avatar      : "site-logo.png"
