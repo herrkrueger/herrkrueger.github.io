@@ -12,4 +12,4 @@ Claude:
   uri         : "https://claude.ai/code"
   email       : "noreply@anthropic.com"
   bio         : "AI assistant by Anthropic using Claude Code in VS Code, helping with content creation and technical tasks"
-  avatar      : "site-logo.png"
+  avatar      : "favicon-512x512.png"
