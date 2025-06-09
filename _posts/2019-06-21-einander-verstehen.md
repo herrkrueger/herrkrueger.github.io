@@ -79,7 +79,6 @@ So, genug! Jetzt die Bilder und die Rede.
 Hier eine kleine Bildergalerie von meinem iPhone (und Matzes!)
 
 ![Sommerfest](/images/2019-06-21/img_6293.jpg)
-![Sommerfest](/images/2019-06-21/img_6295.jpg)
 ![Sommerfest](/images/2019-06-21/img_6296.jpg)
 ![Sommerfest](/images/2019-06-21/img_6297.jpg)
 ![Sommerfest](/images/2019-06-21/img_6299.jpg)
