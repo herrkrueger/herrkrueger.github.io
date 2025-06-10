@@ -21,13 +21,13 @@ title: Einander Verstehen
 
 Gestern fand unser 13. mtc Sommerfest statt und ich muss hier meine Rede posten. Die Rede, die ich nicht gehalten habe. Gestern habe ich zum ersten Mal einfach frei gesprochen. Es war gut. Für das [Pat Parelli Zitat](https://pin.it/xgayifa4fb3afz) habe ich nochmal kurz nachschauen können, dass konnte ich immer noch nicht auswendig.
 
-![Sommerfest](/images/2019-06-21/img_6282.jpg)
+![Venue decoration at the 13th mtc summer party (Sommerfest)](/images/2019-06-21/img_6282.jpg)
 
 Wir hatten einen so schönen Abend, ich hab mich so wohl gefühlt im Kreise der Gemeinschaft, die um unsere Organisation herum, um uns herum, in den letzten 13 Jahren entstanden ist. Bin noch ganz betäubt und erregt, habe auch nur 5h geschlafen.
 
 Ein paar Bilder packe ich jetzt noch dazu und verabschiede mich dann mit Familie für ein kurzes Wochenende nach Prag. Am Montag bin ich zurück im Wald für die letzte Woche meiner Natural Horsemanship Trainerausbildung. Den Juli werde ich auch noch dort verbringen, um den ganzen Input zu verdauen und zu überlegen, wer ich dann bin und zu entscheiden, was ich ab August tun möchte.
 
-![Sommerfest](/images/2019-06-21/img_6675.jpg)
+![Guests mingling at the mtc Sommerfest, enjoying the community atmosphere](/images/2019-06-21/img_6675.jpg)
 
 So, genug! Jetzt die Bilder und die Rede.
 
@@ -79,17 +79,17 @@ So, genug! Jetzt die Bilder und die Rede.
 
 Hier eine kleine Bildergalerie von meinem iPhone (und Matzes!)
 
-![Sommerfest](/images/2019-06-21/img_6293.jpg)
-![Sommerfest](/images/2019-06-21/img_6296.jpg)
-![Sommerfest](/images/2019-06-21/img_6297.jpg)
-![Sommerfest](/images/2019-06-21/img_6299.jpg)
-![Sommerfest](/images/2019-06-21/img_6300.jpg)
-![Sommerfest](/images/2019-06-21/img_6301.jpg)
-![Sommerfest](/images/2019-06-21/img_6302.jpg)
-![Sommerfest](/images/2019-06-21/img_6305.jpg)
-![Sommerfest](/images/2019-06-21/img_6310.jpg)
-![Sommerfest](/images/2019-06-21/img_6311.jpg)
-![Sommerfest](/images/2019-06-21/img_6314.jpg)
-![Sommerfest](/images/2019-06-21/img_6315.jpg)
-![Sommerfest](/images/2019-06-21/img_6328.jpg)
-![Sommerfest](/images/2019-06-21/img_6687.jpg)
+![Gathering area at the mtc Sommerfest with decorations and setup](/images/2019-06-21/img_6293.jpg)
+![Table arrangements with festive decorations at the summer party](/images/2019-06-21/img_6296.jpg)
+![Attendees socializing at the mtc company summer celebration](/images/2019-06-21/img_6297.jpg)
+![Group of colleagues and friends enjoying conversations at the Sommerfest](/images/2019-06-21/img_6299.jpg)
+![Beautifully decorated table settings for the summer party guests](/images/2019-06-21/img_6300.jpg)
+![Festive atmosphere with people gathering at the mtc Sommerfest](/images/2019-06-21/img_6301.jpg)
+![Colleagues and friends celebrating together at the summer event](/images/2019-06-21/img_6302.jpg)
+![Candid moment of guests interacting at the 13th mtc summer party](/images/2019-06-21/img_6305.jpg)
+![People enjoying food and drinks during the celebration](/images/2019-06-21/img_6310.jpg)
+![Group photo of attendees at the mtc Sommerfest](/images/2019-06-21/img_6311.jpg)
+![Lively conversation between guests at the summer gathering](/images/2019-06-21/img_6314.jpg)
+![Friends and colleagues sharing a moment at the mtc celebration](/images/2019-06-21/img_6315.jpg)
+![Evening atmosphere at the summer party with guests mingling](/images/2019-06-21/img_6328.jpg)
+![Arne with colleagues celebrating the community spirit at mtc Sommerfest](/images/2019-06-21/img_6687.jpg)
