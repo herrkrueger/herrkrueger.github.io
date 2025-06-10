@@ -14,14 +14,16 @@ As the founder of mtc.berlin, I specialize in providing technology solutions and
 
 ## Connect with Me
 
-- **Email**: arne.krueger@mtc.berlin
+- **Email**: mailto:arne.krueger@mtc.berlin 
+- **Calendly**: [Schedule a Call with me](https://calendly.com/mtcberlin-arne)
 - **GitHub**: [@herrkrueger](https://github.com/herrkrueger)
 - **LinkedIn**: [herrkrueger](https://linkedin.com/in/herrkrueger)
+- **YouTube**: [herrkrueger](https://www.youtube.com/@herrkrueger)
 - **Instagram**: [@herrkrueger](https://instagram.com/herrkrueger)
 
 ## Location
 
-Currently based on Earth 🌍
+Currently based in Berlin, Bergmannkiez 🌍
 
 ---
 

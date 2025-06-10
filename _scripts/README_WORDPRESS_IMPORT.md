@@ -47,6 +47,8 @@ This will create a CSV file with the following information for each post:
 - Original URL
 - Post slug
 
+The lists are already created and are in /Users/arnekrueger/Documents/github_repos/herrkrueger_old_blog/* in this directory there are also the xml export and the exported media files.
+
 ### Step 2: Import Selected Posts
 
 After reviewing the CSV, you can import posts in two ways:
