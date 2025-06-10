@@ -3,10 +3,11 @@ author: Arne Krueger
 categories:
 - Leadership
 - Philosophie
+- mtc.berlin
 date: 2019-06-21 06:37:46 +0100
 description: Erfolg ohne Zwang, Partnerschaft ohne Dominanz, Teamarbeit ohne Angst.
   Meine Vision für natürliche Gemeinschaften.
-image: /images/2019-06-21/img_6282.jpg
+image: /images/2019-06-21/img_6687.jpg
 tags:
 - beziehungen
 - horsemanship
