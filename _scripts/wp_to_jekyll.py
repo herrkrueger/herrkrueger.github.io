@@ -512,28 +512,124 @@ class WordPressToJekyllConverter:
                     if '.' in filename:
                         print(f"Looking for image: {filename}")
                         
-                        # Look for the file in the media directory
-                        for root, _, files in os.walk(self.media_dir):
-                            if filename in files:
-                                source_path = Path(root) / filename
-                                # Add to attachment map for future use
-                                self.attachment_map[src] = source_path
+                        # Extract post date for directory matching
+                        post_date = dateutil.parser.parse(date)
+                        year_month_path = post_date.strftime('%Y/%m')
+                        year_path = post_date.strftime('%Y')
+                        
+                        # Priority search order: exact date match > year match > any match
+                        search_paths = [
+                            self.media_dir / year_month_path,        # e.g., 2011/03/
+                            self.media_dir / year_path,              # e.g., 2011/
+                            self.media_dir                           # fallback: search all
+                        ]
+                        
+                        found = False
+                        for search_path in search_paths:
+                            if search_path.exists():
+                                for root, _, files in os.walk(search_path):
+                                    if filename in files:
+                                        source_path = Path(root) / filename
+                                        # Add to attachment map for future use
+                                        self.attachment_map[src] = source_path
+                                        
+                                        # Copy image to Jekyll images dir
+                                        target_path = post_images_dir / filename
+                                        try:
+                                            shutil.copy2(source_path, target_path)
+                                            print(f"Copied image: {filename} to {target_path} (from {root})")
+                                            
+                                            # Update image src to Jekyll path
+                                            img['src'] = f"/images/{year_month}/{filename}"
+                                            found = True
+                                            break
+                                        except Exception as e:
+                                            print(f"Error copying image {source_path}: {e}")
                                 
-                                # Copy image to Jekyll images dir
-                                target_path = post_images_dir / filename
-                                try:
-                                    shutil.copy2(source_path, target_path)
-                                    print(f"Copied image: {filename} to {target_path}")
-                                    
-                                    # Update image src to Jekyll path
-                                    img['src'] = f"/images/{year_month}/{filename}"
+                                if found:
                                     break
-                                except Exception as e:
-                                    print(f"Error copying image {source_path}: {e}")
+                        
+                        if not found:
+                            print(f"Warning: Image {filename} not found in any date-appropriate directory")
                 except Exception as e:
                     print(f"Error processing image URL {src}: {e}")
         
+        # Clean WordPress-specific image markup
+        soup = self.clean_image_markup(soup)
+        
+        # Group consecutive images for better layout
+        soup = self.group_consecutive_images(soup)
+        
         return str(soup)
+    
+    def clean_image_markup(self, soup):
+        """Clean WordPress-specific image markup and improve layout"""
+        
+        # Find all img tags
+        images = soup.find_all('img')
+        
+        for img in images:
+            # Remove WordPress-specific classes
+            wp_classes = ['alignnone', 'alignleft', 'alignright', 'aligncenter', 
+                         'size-medium', 'size-large', 'size-full', 'wp-image-']
+            
+            if img.get('class'):
+                img['class'] = [cls for cls in img['class'] 
+                              if not any(wp_cls in cls for wp_cls in wp_classes)]
+                if not img['class']:
+                    del img['class']
+            
+            # Remove WordPress-specific attributes
+            for attr in ['title', 'width', 'height']:
+                if img.get(attr):
+                    del img[attr]
+            
+            # Add Jekyll-friendly styling with !important to override theme CSS
+            img['style'] = 'width: 200px !important; margin: 10px !important; display: inline-block !important; vertical-align: top !important; float: none !important;'
+            
+            # Improve alt text if generic
+            if not img.get('alt') or img.get('alt') == '':
+                img['alt'] = f"Image from post"
+            
+            # Remove wrapping <a> tags if they point to WordPress media
+            parent = img.parent
+            if (parent and parent.name == 'a' and 
+                parent.get('href') and 
+                'files.wordpress.com' in parent.get('href', '')):
+                parent.unwrap()
+        
+        return soup
+    
+    def group_consecutive_images(self, soup):
+        """Group consecutive images for better layout"""
+        
+        # Find sequences of img tags that are siblings
+        for parent in soup.find_all():
+            children = list(parent.children)
+            img_groups = []
+            current_group = []
+            
+            for child in children:
+                if hasattr(child, 'name') and child.name == 'img':
+                    current_group.append(child)
+                else:
+                    if len(current_group) > 1:
+                        img_groups.append(current_group)
+                    current_group = []
+            
+            # Handle final group
+            if len(current_group) > 1:
+                img_groups.append(current_group)
+            
+            # Wrap groups in divs for better styling with left alignment
+            for group in img_groups:
+                if len(group) > 1:
+                    wrapper = soup.new_tag('div', style='text-align: left !important; margin: 20px 0; display: block !important;')
+                    group[0].insert_before(wrapper)
+                    for img in group:
+                        wrapper.append(img)
+        
+        return soup
     
     def create_front_matter(self, title, date, categories, tags, excerpt):
         """Create Jekyll front matter in YAML format."""
