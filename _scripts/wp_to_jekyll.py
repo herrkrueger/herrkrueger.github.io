@@ -277,7 +277,7 @@ class WordPressToJekyllConverter:
         content = self.process_galleries(content, post_id, post_images_dir, year_month)
         
         # Process inline images
-        content = self.process_images(content, post_images_dir, year_month)
+        content = self.process_images(content, post_images_dir, year_month, post_date)
         
         # Convert HTML to Markdown (optional)
         try:
@@ -475,7 +475,7 @@ class WordPressToJekyllConverter:
         
         return content
     
-    def process_images(self, content, post_images_dir, year_month):
+    def process_images(self, content, post_images_dir, year_month, post_date):
         """Process images in content and copy them to Jekyll images directory."""
         if not content:
             return ""
@@ -512,8 +512,8 @@ class WordPressToJekyllConverter:
                     if '.' in filename:
                         print(f"Looking for image: {filename}")
                         
-                        # Extract post date for directory matching
-                        post_date = dateutil.parser.parse(date)
+                        # Extract post date for directory matching (already a datetime object)
+                        # post_date is already passed as parameter
                         year_month_path = post_date.strftime('%Y/%m')
                         year_path = post_date.strftime('%Y')
                         

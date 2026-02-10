@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KI-Diagnostik MedTech — Patentanalyse</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,600;8..60,700&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #0D9488;
+    --teal-light: #14B8A6;
+    --teal-subtle: rgba(13,148,136,0.08);
+    --teal-border: rgba(13,148,136,0.15);
+    --dark: #0F172A;
+    --dark-mid: #1E293B;
+    --slate-700: #334155;
+    --slate-500: #64748B;
+    --slate-400: #94A3B8;
+    --slate-200: #E2E8F0;
+    --slate-100: #F1F5F9;
+    --slate-50: #F8FAFC;
+    --white: #FFFFFF;
+    --red: #EF4444;
+    --green: #22C55E;
+    --amber: #F59E0B;
+    --blue: #3B82F6;
+    --purple: #8B5CF6;
+    --pink: #EC4899;
+    --font-serif: 'Source Serif 4', Georgia, serif;
+    --font-sans: 'DM Sans', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+    --radius: 12px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.03);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--slate-50);
+    color: var(--slate-700);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--dark-mid) 50%, #0F2A3B 100%);
+    padding: 3rem 0 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(13,148,136,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--teal), transparent);
+  }
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+  }
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: rgba(13,148,136,0.15);
+    border: 1px solid rgba(13,148,136,0.3);
+    border-radius: 100px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--teal-light);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .header-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--teal-light);
+  }
+  .header h1 {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 0.5rem;
+  }
+  .header-sub {
+    font-size: 1.05rem;
+    color: var(--slate-400);
+    font-weight: 400;
+    max-width: 650px;
+  }
+  .header-meta {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    flex-wrap: wrap;
+  }
+  .header-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .header-meta-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--slate-500);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-family: var(--font-mono);
+  }
+  .header-meta-value {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--slate-200);
+  }
+
+  /* ─── LAYOUT ─── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+  /* ─── KPI STRIP ─── */
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--slate-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+  }
+  .kpi {
+    background: var(--white);
+    padding: 1.25rem 1.5rem;
+  }
+  .kpi-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--slate-500);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-family: var(--font-mono);
+    margin-bottom: 4px;
+  }
+  .kpi-value {
+    font-family: var(--font-mono);
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--dark);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .kpi-delta {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  .kpi-delta.up { color: var(--green); }
+  .kpi-delta.down { color: var(--red); }
+  .kpi-delta.neutral { color: var(--slate-400); }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--slate-200);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: var(--shadow-md); }
+  .card-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--slate-100);
+  }
+  .card-title {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--dark);
+    letter-spacing: -0.01em;
+  }
+  .card-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--teal);
+    background: var(--teal-subtle);
+    border: 1px solid var(--teal-border);
+    padding: 2px 8px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+  .chart-wrap { position: relative; height: 320px; }
+
+  /* ─── GRID ─── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+  /* ─── INSIGHT ─── */
+  .insight {
+    background: var(--teal-subtle);
+    border-left: 3px solid var(--teal);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+  }
+  .insight-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--teal);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+  .insight p { font-size: 13.5px; color: var(--slate-700); line-height: 1.55; }
+
+  /* ─── TABLE ─── */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table thead th {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--slate-500);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 2px solid var(--slate-200);
+  }
+  .data-table tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--slate-100);
+    color: var(--slate-700);
+  }
+  .data-table tbody tr:hover { background: var(--slate-50); }
+  .data-table .num {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    text-align: right;
+  }
+  .data-table .highlight { background: rgba(13,148,136,0.06); }
+  .data-table .highlight td { font-weight: 600; }
+
+  /* ─── SECTION DIVIDER ─── */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 2.5rem 0 1.5rem;
+  }
+  .section-divider .num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--teal);
+    background: var(--teal-subtle);
+    border: 1px solid var(--teal-border);
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .section-divider h2 {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--dark);
+    letter-spacing: -0.01em;
+  }
+
+  /* ─── STRATEGY BOXES ─── */
+  .scope-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .scope-box {
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+  }
+  .scope-box.include { background: #F0FDF4; border: 1px solid #BBF7D0; }
+  .scope-box.exclude { background: #FEF2F2; border: 1px solid #FECACA; }
+  .scope-box h4 {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+  .scope-box.include h4 { color: #166534; }
+  .scope-box.exclude h4 { color: #991B1B; }
+  .scope-box ul { list-style: none; padding: 0; }
+  .scope-box li {
+    font-size: 13px;
+    padding: 2px 0;
+    color: var(--slate-700);
+  }
+  .scope-box li strong {
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    border-top: 1px solid var(--slate-200);
+    padding: 2rem 0;
+    margin-top: 3rem;
+    text-align: center;
+  }
+  .footer p {
+    font-size: 12px;
+    color: var(--slate-400);
+    font-family: var(--font-mono);
+  }
+  .footer a { color: var(--teal); text-decoration: none; }
+
+  @media (max-width: 768px) {
+    .grid-2, .scope-grid { grid-template-columns: 1fr; }
+    .header h1 { font-size: 1.75rem; }
+    .header-meta { flex-direction: column; gap: 0.75rem; }
+    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ HEADER ═══════════════════════════════════════ -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-badge">Patent Intelligence Report</div>
+    <h1>KI-Diagnostik MedTech</h1>
+    <p class="header-sub">Patentlandschaft der KI-gestützten Diagnostik in der Medizintechnik. Intersection von Artificial Intelligence und diagnostischen Verfahren an europäischen Patentämtern.</p>
+    <div class="header-meta">
+      <div class="header-meta-item">
+        <span class="header-meta-label">Period</span>
+        <span class="header-meta-value">2015 – 2023</span>
+      </div>
+      <div class="header-meta-item">
+        <span class="header-meta-label">Scope</span>
+        <span class="header-meta-value">DE + EP Applications</span>
+      </div>
+      <div class="header-meta-item">
+        <span class="header-meta-label">Data Source</span>
+        <span class="header-meta-value">EPO PATSTAT Global (Autumn 2025)</span>
+      </div>
+      <div class="header-meta-item">
+        <span class="header-meta-label">Platform</span>
+        <span class="header-meta-value">Google Cloud BigQuery by mtc</span>
+      </div>
+      <div class="header-meta-item">
+        <span class="header-meta-label">Updated</span>
+        <span class="header-meta-value">February 2026</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════ KPIs ═══════════════════════════════════════ -->
+<div class="kpi-strip">
+  <div class="kpi">
+    <div class="kpi-label">Total Applications</div>
+    <div class="kpi-value">1,704</div>
+    <div class="kpi-delta neutral">AI × Diagnostics</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Growth</div>
+    <div class="kpi-value">14.6×</div>
+    <div class="kpi-delta up">↑ 2015 → 2022</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Peak Year</div>
+    <div class="kpi-value">350</div>
+    <div class="kpi-delta neutral">2022 (record)</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Siemens Healthineers</div>
+    <div class="kpi-value">123</div>
+    <div class="kpi-delta up">↑ German #1</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Neural Networks</div>
+    <div class="kpi-value">66%</div>
+    <div class="kpi-delta neutral">of AI classifications</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ SECTION 1: SEARCH STRATEGY ═══════════════════════════════════════ -->
+<div class="section-divider">
+  <span class="num">01</span>
+  <h2>Suchstrategie — IPC Intersection</h2>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">Classification Strategy: AI × Diagnostics</span>
+    <span class="card-tag">Methodology</span>
+  </div>
+  <p style="font-size:13.5px; color:var(--slate-700); margin-bottom:1rem; line-height:1.6">
+    Gesucht werden Patentanmeldungen, die <strong>gleichzeitig</strong> mindestens eine AI-IPC und mindestens eine Diagnostik-IPC tragen. So werden nur Patente erfasst, die KI-Methoden tatsächlich auf medizinische Diagnostik anwenden.
+  </p>
+  <div class="scope-grid">
+    <div class="scope-box include">
+      <h4>AI-Seite (OR)</h4>
+      <ul>
+        <li><strong>G06N 3/</strong> Neural Networks, Deep Learning</li>
+        <li><strong>G06N 5/</strong> Wissensbasierte Modelle</li>
+        <li><strong>G06N 7/</strong> Mathematische Modelle (stat. AI)</li>
+        <li><strong>G06N 20/</strong> Machine Learning</li>
+        <li><strong>G06T 1/4</strong> Neuronale Netze für Bildverarbeitung</li>
+      </ul>
+    </div>
+    <div class="scope-box include">
+      <h4>Diagnostik-Seite (OR)</h4>
+      <ul>
+        <li><strong>A61B 3/</strong> Augendiagnostik (Ophthalmologie)</li>
+        <li><strong>A61B 5/</strong> Diagnostische Messungen, EKG, Monitoring</li>
+        <li><strong>A61B 6/</strong> Strahlendiagnostik (Röntgen, CT)</li>
+        <li><strong>A61B 8/</strong> Ultraschalldiagnostik</li>
+        <li><strong>G16H 30/</strong> ICT für medizinische Bildverarbeitung</li>
+        <li><strong>G16H 50/</strong> ICT für medizinische Diagnose / Data Mining</li>
+      </ul>
+    </div>
+  </div>
+  <div class="scope-box exclude" style="margin:0">
+    <h4>Nicht im Scope</h4>
+    <ul style="display:grid; grid-template-columns:1fr 1fr; gap:0 2rem;">
+      <li><strong>A61B 34/</strong> Roboter-Chirurgie</li>
+      <li><strong>G01N</strong> Labor-Diagnostik</li>
+      <li><strong>A61B 1/</strong> Endoskope</li>
+      <li><strong>A61B 17/, 18/</strong> Chirurgie</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ SECTION 2: TREND ═══════════════════════════════════════ -->
+<div class="section-divider">
+  <span class="num">02</span>
+  <h2>Filing Volume & Growth Trajectory</h2>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">Annual Applications — AI × Diagnostics</span>
+    <span class="card-tag">Trend</span>
+  </div>
+  <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+  <div class="insight">
+    <div class="insight-title">Key Insight</div>
+    <p>14.6× growth from 24 applications (2015) to a peak of 350 (2022). The 2023 decline to 266 likely reflects either post-hype consolidation or the 18-month publication delay. 2024/2025 data is not yet complete.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ SECTION 3: IPC DISTRIBUTION ═══════════════════════════════════════ -->
+<div class="section-divider">
+  <span class="num">03</span>
+  <h2>IPC Classification Profiles</h2>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">AI-Side Distribution</span>
+      <span class="card-tag">AI Classes</span>
+    </div>
+    <div class="chart-wrap"><canvas id="aiChart"></canvas></div>
+    <div class="insight">
+      <div class="insight-title">Key Insight</div>
+      <p>Neural Networks (G06N 3/) dominate with 1,122 classifications (66%). Machine Learning (G06N 20/) follows. Applications can carry multiple AI classes.</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Diagnostics-Side Distribution</span>
+      <span class="card-tag">Diagnostics</span>
+    </div>
+    <div class="chart-wrap"><canvas id="diagChart"></canvas></div>
+    <div class="insight">
+      <div class="insight-title">Key Insight</div>
+      <p>G16H 50/ (Diagnosis/Mining) and A61B 5/ (Measurement) lead, followed by medical image processing and radiation diagnostics (CT, X-ray).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ SECTION 4: TOP APPLICANTS ═══════════════════════════════════════ -->
+<div class="section-divider">
+  <span class="num">04</span>
+  <h2>Top Applicants</h2>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">Top 20 Applicants — AI-assisted Diagnostics</span>
+    <span class="card-tag">Competition</span>
+  </div>
+  <div class="chart-wrap" style="height:440px"><canvas id="applicantChart"></canvas></div>
+  <div class="insight">
+    <div class="insight-title">Key Insight</div>
+    <p>Philips (NL, 128) leads as a single entity. Siemens Healthcare GmbH + Siemens Healthineers AG together hold 123 applications (pre-/post-rebrand). German players: Siemens (123), Bayer (18), Carl Zeiss Meditec (15). South Korea shows strong presence: Samsung (21), Deep Bio (17), Lunit (14).</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ SECTION 5: SIEMENS SHOWCASE ═══════════════════════════════════════ -->
+<div class="section-divider">
+  <span class="num">05</span>
+  <h2>Showcase: Siemens Healthineers</h2>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">Siemens Filing Trajectory — Combined Entities</span>
+    <span class="card-tag">Case Study</span>
+  </div>
+  <div class="chart-wrap" style="height:280px"><canvas id="siemensChart"></canvas></div>
+  <div class="insight">
+    <div class="insight-title">Key Insight</div>
+    <p>Peak in 2020 (35 applications), then a stable plateau around 20/year. Total: 133 applications incl. 2024. The 2020 peak correlates with the CE-approval wave for AI diagnostics products. Siemens is the leading German applicant in AI-assisted diagnostics.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ SECTION 6: AI TECH TREND ═══════════════════════════════════════ -->
+<div class="section-divider">
+  <span class="num">06</span>
+  <h2>AI Technology Evolution</h2>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">AI Classes — Annual Trend</span>
+    <span class="card-tag">Technology</span>
+  </div>
+  <div class="chart-wrap" style="height:360px"><canvas id="aiTrendChart"></canvas></div>
+  <div class="insight">
+    <div class="insight-title">Key Insight</div>
+    <p>G06N 3/ (Neural Networks) overtook G06N 20/ (Machine Learning) from 2017 and has dominated since. Deep learning approaches are the central AI technology in medical diagnostics. Knowledge-based systems (G06N 5/) remain a niche.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ SECTION 7: SUMMARY ═══════════════════════════════════════ -->
+<div class="section-divider">
+  <span class="num">07</span>
+  <h2>Zusammenfassung</h2>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Marktdynamik</span>
+      <span class="card-tag" style="color:var(--blue);background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.15)">Market</span>
+    </div>
+    <div style="font-size:13.5px; line-height:1.7">
+      <p style="margin-bottom:0.5rem">14,6-faches Wachstum von 2015 (24) bis Peak 2022 (350).</p>
+      <p style="margin-bottom:0.5rem">Rückgang 2023 auf 266 — möglicherweise Konsolidierung nach dem AI-Hype oder Veröffentlichungsverzögerung.</p>
+      <p>2024/25 noch unvollständig (18 Monate Veröffentlichungsfrist).</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Technologie</span>
+      <span class="card-tag">Tech</span>
+    </div>
+    <div style="font-size:13.5px; line-height:1.7">
+      <p style="margin-bottom:0.5rem">Neural Networks (G06N 3/) ist die dominierende AI-Technologie (66% der AI-Klassifikationen).</p>
+      <p style="margin-bottom:0.5rem">Diagnostische Messungen (A61B 5/) und Software-Diagnose (G16H 50/) führen auf der Diagnostik-Seite.</p>
+      <p>Strahlendiagnostik (CT, Röntgen) und Ultraschall sind starke Wachstumsfelder.</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Wettbewerb</span>
+      <span class="card-tag" style="color:var(--amber);background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.15)">Competition</span>
+    </div>
+    <div style="font-size:13.5px; line-height:1.7">
+      <p style="margin-bottom:0.5rem">Philips (NL, 128) und Siemens (DE, 123) dominieren mit deutlichem Abstand.</p>
+      <p style="margin-bottom:0.5rem">Südkorea stark vertreten: Samsung (21), Deep Bio (17), Lunit (14).</p>
+      <p>US-Universitäten aktiv: UC, Stanford, Johns Hopkins, Sloan Kettering.</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Deutschland</span>
+      <span class="card-tag" style="color:var(--purple);background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.15)">Germany</span>
+    </div>
+    <div style="font-size:13.5px; line-height:1.7">
+      <p style="margin-bottom:0.5rem">Siemens Healthineers: 123 Anmeldungen, klarer deutscher Champion.</p>
+      <p style="margin-bottom:0.5rem">Bayer AG (18) und Carl Zeiss Meditec (15) als weitere deutsche Akteure.</p>
+      <p>Siemens-Peak 2020 korreliert mit CE-Zulassungswelle für AI-Diagnostik-Produkte.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ SECTION 8: DATA & APPROACH ═══════════════════════════════════════ -->
+<div class="section-divider">
+  <span class="num">08</span>
+  <h2>Data & Approach</h2>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">Methodology & Reproducibility</span>
+    <span class="card-tag">Methodology</span>
+  </div>
+  <div style="font-size:13.5px; line-height:1.7; color:var(--slate-700)">
+    <p style="margin-bottom:0.75rem"><strong>Data source:</strong> EPO PATSTAT Global (Autumn 2025 Edition) via Google Cloud BigQuery by mtc. Analysis covers DE and EP applications that carry both AI and diagnostics IPC classifications simultaneously.</p>
+    <p style="margin-bottom:0.75rem"><strong>Intersection logic:</strong> Each application must have at least one AI-side IPC (G06N 3/, 5/, 7/, 20/ or G06T 1/4) AND at least one diagnostics-side IPC (A61B 3/, 5/, 6/, 8/ or G16H 30/, 50/). Applications carrying excluded classifications (A61B 34/, A61B 1/, G01N) are removed.</p>
+    <p style="margin-bottom:0.75rem"><strong>Pattern matching:</strong> <code style="font-family:var(--font-mono);font-size:12px;background:var(--slate-100);padding:2px 6px;border-radius:4px">REGEXP_CONTAINS(ipc, r'^G06N\s*(3|5|7|20)/')</code> handles variable whitespace in PATSTAT IPC codes. Applicant filtering uses <code style="font-family:var(--font-mono);font-size:12px;background:var(--slate-100);padding:2px 6px;border-radius:4px">applt_seq_nr > 0</code> with <code style="font-family:var(--font-mono);font-size:12px;background:var(--slate-100);padding:2px 6px;border-radius:4px">COALESCE(han_name, person_name)</code> for harmonized company names.</p>
+    <p><strong>Context:</strong> Preliminary analysis for the German Medical Technology Association (BVMed) in the context of the Hightech-Strategie Deutschland and WIK Discussion Paper No. 535.</p>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<!-- ═══════════════════════════════════════ FOOTER ═══════════════════════════════════════ -->
+<div class="footer">
+  <div class="container">
+    <p style="margin-bottom:4px">KI-Diagnostik MedTech Analysis — <a href="https://mtc.berlin">mtc.berlin</a> | PIZnet e.V.</p>
+    <p>Voranalyse für den Bundesverband Medizintechnologie (BVMed) · © 2026</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ CHARTS ═══════════════════════════════════════ -->
+<script>
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.color = '#64748B';
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.pointStyle = 'circle';
+Chart.defaults.plugins.legend.labels.padding = 16;
+
+// 1 — TREND
+new Chart(document.getElementById('trendChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023'],
+    datasets: [{
+      label: 'Applications',
+      data: [24,32,71,107,205,302,301,350,266],
+      backgroundColor: '#334155',
+      borderRadius: 4,
+      barThickness: 36
+    },{
+      label: 'Growth Trajectory',
+      data: [24,32,71,107,205,302,301,350,266],
+      type: 'line',
+      borderColor: '#0D9488',
+      backgroundColor: 'rgba(13,148,136,0.06)',
+      fill: true, tension: 0.35, pointRadius: 5, pointBackgroundColor: '#0D9488', borderWidth: 2.5,
+      order: -1
+    }]
+  },
+  options: { responsive:true, maintainAspectRatio:false,
+    scales: {
+      y:{ beginAtZero:true, ticks:{font:{family:"'JetBrains Mono'"}}, grid:{color:'rgba(0,0,0,0.04)'} },
+      x:{ grid:{display:false} }
+    }
+  }
+});
+
+// 2 — AI IPC Distribution
+new Chart(document.getElementById('aiChart'), {
+  type: 'bar',
+  data: {
+    labels: [['G06N 3/','Neural Nets'],['G06N 20/','ML'],['G06N 5/','Knowledge'],['G06N 7/','Math'],['G06T 1/4','NN Image']],
+    datasets: [{
+      data: [1122,784,171,122,59],
+      backgroundColor: ['#0F172A','#0D9488','#8B5CF6','#F59E0B','#EC4899'],
+      borderRadius: 4,
+      barThickness: 28
+    }]
+  },
+  options: { responsive:true, maintainAspectRatio:false, indexAxis:'y',
+    plugins: { legend:{display:false} },
+    scales: {
+      x:{ ticks:{font:{family:"'JetBrains Mono'",size:11}}, grid:{color:'rgba(0,0,0,0.04)'} },
+      y:{ ticks:{font:{size:11}}, grid:{display:false} }
+    }
+  }
+});
+
+// 3 — DIAGNOSTICS Distribution
+new Chart(document.getElementById('diagChart'), {
+  type: 'bar',
+  data: {
+    labels: [['G16H 50/','Diagnosis'],['A61B 5/','Measurement'],['G16H 30/','Imaging SW'],['A61B 6/','Radiation'],['A61B 8/','Ultrasound'],['A61B 3/','Ophthalm.']],
+    datasets: [{
+      data: [998,833,423,209,110,73],
+      backgroundColor: ['#0D9488','#0F172A','#8B5CF6','#F59E0B','#EC4899','#94A3B8'],
+      borderRadius: 4,
+      barThickness: 22
+    }]
+  },
+  options: { responsive:true, maintainAspectRatio:false, indexAxis:'y',
+    plugins: { legend:{display:false} },
+    scales: {
+      x:{ ticks:{font:{family:"'JetBrains Mono'",size:11}}, grid:{color:'rgba(0,0,0,0.04)'} },
+      y:{ ticks:{font:{size:11}}, grid:{display:false} }
+    }
+  }
+});
+
+// 4 — TOP APPLICANTS
+const appNames = ['Philips (NL)','Siemens Healthcare (DE)','Siemens Healthineers (DE)','Samsung (KR)',
+  'Fujifilm (JP)','Bayer (DE)','TCS (IN)','Deep Bio (KR)','Carl Zeiss (DE)','Google (US)',
+  'Lunit (KR)','Roche (CH)','Microsoft (US)','UC California (US)','Sloan Kettering (US)',
+  'Tencent (CN)','Stanford (US)','GE Healthcare (US)','KPN Innovations (US)','Johns Hopkins (US)'];
+const appData = [128,90,33,21,20,18,17,17,15,14,14,13,11,11,9,9,8,8,8,8];
+const appColors = appNames.map(n => n.includes('DE') ? '#0D9488' : n.includes('NL') ? '#0F172A' : n.includes('KR') ? '#8B5CF6' : n.includes('US') ? '#3B82F6' : n.includes('JP') ? '#EF4444' : n.includes('CN') ? '#EF4444' : n.includes('CH') ? '#EF4444' : n.includes('IN') ? '#F59E0B' : '#94A3B8');
+new Chart(document.getElementById('applicantChart'), {
+  type: 'bar',
+  data: {
+    labels: appNames,
+    datasets: [{
+      data: appData,
+      backgroundColor: appColors,
+      borderRadius: 4,
+      barThickness: 14
+    }]
+  },
+  options: { responsive:true, maintainAspectRatio:false, indexAxis:'y',
+    plugins: { legend:{display:false} },
+    scales: {
+      x:{ ticks:{font:{family:"'JetBrains Mono'",size:11}}, grid:{color:'rgba(0,0,0,0.04)'} },
+      y:{ ticks:{font:{size:11}}, grid:{display:false} }
+    }
+  }
+});
+
+// 5 — SIEMENS SHOWCASE
+new Chart(document.getElementById('siemensChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023'],
+    datasets: [{
+      label: 'Siemens Applications',
+      data: [2,1,12,6,11,35,20,20,21],
+      backgroundColor: '#0D9488',
+      borderRadius: 4,
+      barThickness: 32
+    },{
+      label: 'Trend',
+      data: [2,1,12,6,11,35,20,20,21],
+      type: 'line',
+      borderColor: '#0F172A',
+      tension: 0.35, pointRadius: 4, pointBackgroundColor: '#0F172A', borderWidth: 2,
+      order: -1
+    }]
+  },
+  options: { responsive:true, maintainAspectRatio:false,
+    scales: {
+      y:{ beginAtZero:true, ticks:{font:{family:"'JetBrains Mono'"}}, grid:{color:'rgba(0,0,0,0.04)'} },
+      x:{ grid:{display:false} }
+    }
+  }
+});
+
+// 6 — AI TECH TREND
+new Chart(document.getElementById('aiTrendChart'), {
+  type: 'line',
+  data: {
+    labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023'],
+    datasets: [{
+      label: 'G06N 3/ Neural Nets',
+      data: [9,8,36,64,150,207,203,245,170],
+      borderColor: '#0F172A', backgroundColor: 'rgba(15,23,42,0.04)',
+      fill: true, tension: 0.35, pointRadius: 4, borderWidth: 3
+    },{
+      label: 'G06N 20/ ML',
+      data: [13,21,32,45,76,151,139,171,115],
+      borderColor: '#0D9488',
+      tension: 0.35, pointRadius: 3, borderWidth: 2
+    },{
+      label: 'G06N 5/ Knowledge',
+      data: [4,3,12,12,38,29,32,28,11],
+      borderColor: '#8B5CF6',
+      tension: 0.35, pointRadius: 3, borderWidth: 2
+    },{
+      label: 'G06N 7/ Math',
+      data: [4,7,7,14,30,22,12,17,8],
+      borderColor: '#F59E0B',
+      tension: 0.35, pointRadius: 2, borderWidth: 1.5, borderDash:[5,5]
+    },{
+      label: 'G06T 1/4 NN Image',
+      data: [0,1,4,3,12,10,16,6,7],
+      borderColor: '#EC4899',
+      tension: 0.35, pointRadius: 2, borderWidth: 1.5, borderDash:[3,3]
+    }]
+  },
+  options: { responsive:true, maintainAspectRatio:false,
+    scales: {
+      y:{ beginAtZero:true, ticks:{font:{family:"'JetBrains Mono'"}}, grid:{color:'rgba(0,0,0,0.04)'} },
+      x:{ grid:{display:false} }
+    },
+    plugins: { legend:{labels:{font:{size:11}}} }
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KI-Diagnostik MedTech -- Patentanalyse</title>
+<style>
+  :root {
+    --blue: #2563eb;
+    --blue-light: #3b82f6;
+    --teal: #0d9488;
+    --orange: #ea580c;
+    --purple: #7c3aed;
+    --pink: #db2777;
+    --gray: #64748b;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-secondary: #475569;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid var(--border);
+  }
+  header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+  header p { color: var(--text-secondary); font-size: 1rem; }
+  .meta-row {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+  .meta-badge {
+    background: var(--blue);
+    color: white;
+    padding: 0.3rem 1rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .meta-badge.teal { background: var(--teal); }
+  .meta-badge.orange { background: var(--orange); }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .kpi {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .kpi .number { font-size: 2.5rem; font-weight: 800; color: var(--blue); }
+  .kpi .number.teal { color: var(--teal); }
+  .kpi .number.orange { color: var(--orange); }
+  .kpi .number.purple { color: var(--purple); }
+  .kpi .label { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem; }
+
+  section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+  section h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Bar charts */
+  .bar-chart { width: 100%; }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    gap: 0.75rem;
+  }
+  .bar-label {
+    min-width: 60px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .bar-track {
+    flex: 1;
+    background: #f1f5f9;
+    border-radius: 6px;
+    height: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    background: var(--blue);
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    transition: width 0.5s ease;
+    min-width: 40px;
+  }
+  .bar-fill.teal { background: var(--teal); }
+  .bar-fill.orange { background: var(--orange); }
+  .bar-fill.purple { background: var(--purple); }
+  .bar-fill.pink { background: var(--pink); }
+  .bar-value {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 0.6rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+  th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); font-weight: 600; }
+  td { font-size: 0.9rem; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  .flag { margin-right: 0.3rem; }
+  .highlight-row td { background: #eff6ff; font-weight: 600; }
+
+  /* Dual column */
+  .dual-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  @media (max-width: 768px) { .dual-grid { grid-template-columns: 1fr; } }
+
+  .strategy-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .strategy-box h3 { font-size: 0.95rem; color: #166534; margin-bottom: 0.5rem; }
+  .strategy-box ul { list-style: none; padding: 0; }
+  .strategy-box li { font-size: 0.85rem; padding: 0.2rem 0; }
+  .strategy-box li::before { content: ""; margin-right: 0.4rem; }
+
+  .exclude-box {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+  }
+  .exclude-box h3 { font-size: 0.95rem; color: #991b1b; margin-bottom: 0.5rem; }
+  .exclude-box li::before { content: ""; margin-right: 0.4rem; }
+  .exclude-box ul { list-style: none; padding: 0; }
+  .exclude-box li { font-size: 0.85rem; padding: 0.2rem 0; }
+
+  footer {
+    text-align: center;
+    padding: 2rem 0 1rem;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+  }
+
+  .siemens-accent { background: #009999; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>KI-Diagnostik MedTech</h1>
+  <p>Patentlandschaft: KI-gestuetzte Diagnostik in der Medizintechnik</p>
+  <div class="meta-row">
+    <span class="meta-badge">DE + EP Anmeldungen</span>
+    <span class="meta-badge teal">2015 -- 2023</span>
+    <span class="meta-badge orange">PATSTAT BigQuery</span>
+  </div>
+</header>
+
+<!-- KPIs -->
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="number">1.704</div>
+    <div class="label">Anmeldungen gesamt<br>(AI x Diagnostik)</div>
+  </div>
+  <div class="kpi">
+    <div class="number teal">14,6x</div>
+    <div class="label">Wachstum<br>2015 &rarr; 2022</div>
+  </div>
+  <div class="kpi">
+    <div class="number orange">350</div>
+    <div class="label">Peak 2022<br>(Rekord)</div>
+  </div>
+  <div class="kpi">
+    <div class="number purple">123</div>
+    <div class="label">Siemens Healthineers<br>(DE #1)</div>
+  </div>
+</div>
+
+<!-- Suchstrategie -->
+<section>
+  <h2>Suchstrategie</h2>
+  <p style="margin-bottom:1.25rem; color: var(--text-secondary); font-size:0.9rem;">
+    Gesucht werden Patentanmeldungen, die <strong>gleichzeitig</strong> mindestens eine AI-IPC und mindestens eine Diagnostik-IPC tragen.
+    So werden nur Patente erfasst, die KI-Methoden tatsaechlich auf medizinische Diagnostik anwenden.
+  </p>
+  <div class="dual-grid">
+    <div>
+      <div class="strategy-box">
+        <h3>AI-Seite (ODER)</h3>
+        <ul>
+          <li><strong>G06N 3/</strong> Neural Networks, Deep Learning</li>
+          <li><strong>G06N 5/</strong> Wissensbasierte Modelle</li>
+          <li><strong>G06N 7/</strong> Mathematische Modelle (stat. AI)</li>
+          <li><strong>G06N 20/</strong> Machine Learning</li>
+          <li><strong>G06T 1/4</strong> Neuronale Netze fuer Bildverarbeitung</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="strategy-box">
+        <h3>Diagnostik-Seite (ODER)</h3>
+        <ul>
+          <li><strong>A61B 3/</strong> Augendiagnostik (Ophthalmologie)</li>
+          <li><strong>A61B 5/</strong> Diagnostische Messungen, EKG, Monitoring</li>
+          <li><strong>A61B 6/</strong> Strahlendiagnostik (Roentgen, CT)</li>
+          <li><strong>A61B 8/</strong> Ultraschalldiagnostik</li>
+          <li><strong>G16H 30/</strong> ICT fuer medizinische Bildverarbeitung</li>
+          <li><strong>G16H 50/</strong> ICT fuer medizinische Diagnose / Data Mining</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="exclude-box">
+    <h3>Nicht im Scope</h3>
+    <ul style="columns: 2;">
+      <li><strong>A61B 34/</strong> Roboter-Chirurgie</li>
+      <li><strong>A61B 1/</strong> Endoskope</li>
+      <li><strong>A61B 17/, 18/</strong> Chirurgie</li>
+      <li><strong>G01N</strong> Labor-Diagnostik</li>
+    </ul>
+  </div>
+</section>
+
+<!-- Trend -->
+<section>
+  <h2>Anmeldungen pro Jahr</h2>
+  <div class="bar-chart">
+    <div class="bar-row"><span class="bar-label">2015</span><div class="bar-track"><div class="bar-fill" style="width:6.9%"><span class="bar-value">24</span></div></div></div>
+    <div class="bar-row"><span class="bar-label">2016</span><div class="bar-track"><div class="bar-fill" style="width:9.1%"><span class="bar-value">32</span></div></div></div>
+    <div class="bar-row"><span class="bar-label">2017</span><div class="bar-track"><div class="bar-fill" style="width:20.3%"><span class="bar-value">71</span></div></div></div>
+    <div class="bar-row"><span class="bar-label">2018</span><div class="bar-track"><div class="bar-fill" style="width:30.6%"><span class="bar-value">107</span></div></div></div>
+    <div class="bar-row"><span class="bar-label">2019</span><div class="bar-track"><div class="bar-fill" style="width:58.6%"><span class="bar-value">205</span></div></div></div>
+    <div class="bar-row"><span class="bar-label">2020</span><div class="bar-track"><div class="bar-fill" style="width:86.3%"><span class="bar-value">302</span></div></div></div>
+    <div class="bar-row"><span class="bar-label">2021</span><div class="bar-track"><div class="bar-fill" style="width:86.0%"><span class="bar-value">301</span></div></div></div>
+    <div class="bar-row"><span class="bar-label">2022</span><div class="bar-track"><div class="bar-fill" style="width:100%"><span class="bar-value">350</span></div></div></div>
+    <div class="bar-row"><span class="bar-label">2023</span><div class="bar-track"><div class="bar-fill" style="width:76.0%"><span class="bar-value">266</span></div></div></div>
+  </div>
+  <p style="margin-top:1rem; font-size:0.8rem; color:var(--text-secondary);">
+    2024/2025 nicht dargestellt (unvollstaendige Daten wegen Veroeffentlichungsverzoegerung von 18 Monaten).
+  </p>
+</section>
+
+<!-- AI + Diagnostik IPC Verteilung -->
+<div class="dual-grid">
+  <section>
+    <h2>AI-IPC-Verteilung</h2>
+    <div class="bar-chart">
+      <div class="bar-row"><span class="bar-label" style="min-width:130px">G06N 3/ NN</span><div class="bar-track"><div class="bar-fill" style="width:100%"><span class="bar-value">1.122</span></div></div></div>
+      <div class="bar-row"><span class="bar-label" style="min-width:130px">G06N 20/ ML</span><div class="bar-track"><div class="bar-fill teal" style="width:69.9%"><span class="bar-value">784</span></div></div></div>
+      <div class="bar-row"><span class="bar-label" style="min-width:130px">G06N 5/ KB</span><div class="bar-track"><div class="bar-fill purple" style="width:15.2%"><span class="bar-value">171</span></div></div></div>
+      <div class="bar-row"><span class="bar-label" style="min-width:130px">G06N 7/ Math</span><div class="bar-track"><div class="bar-fill orange" style="width:10.9%"><span class="bar-value">122</span></div></div></div>
+      <div class="bar-row"><span class="bar-label" style="min-width:130px">G06T 1/4 Img</span><div class="bar-track"><div class="bar-fill pink" style="width:5.3%"><span class="bar-value">59</span></div></div></div>
+    </div>
+    <p style="margin-top:1rem; font-size:0.8rem; color:var(--text-secondary);">
+      Anmeldungen koennen mehrere AI-Klassen tragen. G06N 3/ (Neural Networks) dominiert klar.
+    </p>
+  </section>
+
+  <section>
+    <h2>Diagnostik-IPC-Verteilung</h2>
+    <div class="bar-chart">
+      <div class="bar-row"><span class="bar-label" style="min-width:130px">G16H 50/</span><div class="bar-track"><div class="bar-fill teal" style="width:100%"><span class="bar-value">998</span></div></div></div>
+      <div class="bar-row"><span class="bar-label" style="min-width:130px">A61B 5/</span><div class="bar-track"><div class="bar-fill" style="width:83.5%"><span class="bar-value">833</span></div></div></div>
+      <div class="bar-row"><span class="bar-label" style="min-width:130px">G16H 30/</span><div class="bar-track"><div class="bar-fill purple" style="width:42.4%"><span class="bar-value">423</span></div></div></div>
+      <div class="bar-row"><span class="bar-label" style="min-width:130px">A61B 6/</span><div class="bar-track"><div class="bar-fill orange" style="width:20.9%"><span class="bar-value">209</span></div></div></div>
+      <div class="bar-row"><span class="bar-label" style="min-width:130px">A61B 8/</span><div class="bar-track"><div class="bar-fill pink" style="width:11.0%"><span class="bar-value">110</span></div></div></div>
+      <div class="bar-row"><span class="bar-label" style="min-width:130px">A61B 3/</span><div class="bar-track"><div class="bar-fill" style="width:7.3%; background: var(--gray)"><span class="bar-value">73</span></div></div></div>
+    </div>
+    <p style="margin-top:1rem; font-size:0.8rem; color:var(--text-secondary);">
+      G16H 50/ (Diagnose/Mining) und A61B 5/ (Messung) fuehren, gefolgt von Bildverarbeitung und Strahlendiagnostik.
+    </p>
+  </section>
+</div>
+
+<!-- Top Anmelder -->
+<section>
+  <h2>Top 20 Anmelder</h2>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Anmelder</th><th>Land</th><th style="text-align:right">Anmeldungen</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>Koninklijke Philips Electronics N.V.</td><td><span class="flag">&#x1F1F3;&#x1F1F1;</span>NL</td><td class="num">128</td></tr>
+      <tr class="highlight-row"><td>2</td><td>Siemens Healthcare GmbH</td><td><span class="flag">&#x1F1E9;&#x1F1EA;</span>DE</td><td class="num">90</td></tr>
+      <tr class="highlight-row"><td>3</td><td>Siemens Healthineers AG</td><td><span class="flag">&#x1F1E9;&#x1F1EA;</span>DE</td><td class="num">33</td></tr>
+      <tr><td>4</td><td>Samsung Electronics Co., Ltd.</td><td><span class="flag">&#x1F1F0;&#x1F1F7;</span>KR</td><td class="num">21</td></tr>
+      <tr><td>5</td><td>Fujifilm Corp.</td><td><span class="flag">&#x1F1EF;&#x1F1F5;</span>JP</td><td class="num">20</td></tr>
+      <tr><td>6</td><td>Bayer AG</td><td><span class="flag">&#x1F1E9;&#x1F1EA;</span>DE</td><td class="num">18</td></tr>
+      <tr><td>7</td><td>Tata Consultancy Services Ltd.</td><td><span class="flag">&#x1F1EE;&#x1F1F3;</span>IN</td><td class="num">17</td></tr>
+      <tr><td>8</td><td>Deep Bio Inc.</td><td><span class="flag">&#x1F1F0;&#x1F1F7;</span>KR</td><td class="num">17</td></tr>
+      <tr><td>9</td><td>Carl Zeiss Meditec AG</td><td><span class="flag">&#x1F1E9;&#x1F1EA;</span>DE</td><td class="num">15</td></tr>
+      <tr><td>10</td><td>Google LLC</td><td><span class="flag">&#x1F1FA;&#x1F1F8;</span>US</td><td class="num">14</td></tr>
+      <tr><td>11</td><td>Lunit Inc.</td><td><span class="flag">&#x1F1F0;&#x1F1F7;</span>KR</td><td class="num">14</td></tr>
+      <tr><td>12</td><td>F. Hoffmann-La Roche AG</td><td><span class="flag">&#x1F1E8;&#x1F1ED;</span>CH</td><td class="num">13</td></tr>
+      <tr><td>13</td><td>Microsoft Technology Licensing LLC</td><td><span class="flag">&#x1F1FA;&#x1F1F8;</span>US</td><td class="num">11</td></tr>
+      <tr><td>14</td><td>University of California</td><td><span class="flag">&#x1F1FA;&#x1F1F8;</span>US</td><td class="num">11</td></tr>
+      <tr><td>15</td><td>Memorial Sloan Kettering Cancer Center</td><td><span class="flag">&#x1F1FA;&#x1F1F8;</span>US</td><td class="num">9</td></tr>
+      <tr><td>16</td><td>Tencent Technology (Shenzhen) Co., Ltd.</td><td><span class="flag">&#x1F1E8;&#x1F1F3;</span>CN</td><td class="num">9</td></tr>
+      <tr><td>17</td><td>Stanford University</td><td><span class="flag">&#x1F1FA;&#x1F1F8;</span>US</td><td class="num">8</td></tr>
+      <tr><td>18</td><td>GE Precision Healthcare LLC</td><td><span class="flag">&#x1F1FA;&#x1F1F8;</span>US</td><td class="num">8</td></tr>
+      <tr><td>19</td><td>KPN Innovations LLC</td><td><span class="flag">&#x1F1FA;&#x1F1F8;</span>US</td><td class="num">8</td></tr>
+      <tr><td>20</td><td>Johns Hopkins University</td><td><span class="flag">&#x1F1FA;&#x1F1F8;</span>US</td><td class="num">8</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:1rem; font-size:0.8rem; color:var(--text-secondary);">
+    Siemens Healthcare GmbH + Siemens Healthineers AG zusammen: <strong>123 Anmeldungen</strong> (vor Umfirmierung/nach Umfirmierung).
+    Philips fuehrt als einzelne Entitaet. Deutsche Anmelder: Siemens (123), Bayer (18), Carl Zeiss Meditec (15).
+  </p>
+</section>
+
+<!-- Siemens Showcase -->
+<section>
+  <h2>Showcase: Siemens Healthineers</h2>
+  <div class="bar-chart">
+    <div class="bar-row"><span class="bar-label">2015</span><div class="bar-track"><div class="bar-fill siemens-accent" style="width:5.7%"><span class="bar-value">2</span></div></div></div>
+    <div class="bar-row"><span class="bar-label">2016</span><div class="bar-track"><div class="bar-fill siemens-accent" style="width:2.9%"><span class="bar-value">1</span></div></div></div>
+    <div class="bar-row"><span class="bar-label">2017</span><div class="bar-track"><div class="bar-fill siemens-accent" style="width:34.3%"><span class="bar-value">12</span></div></div></div>
+    <div class="bar-row"><span class="bar-label">2018</span><div class="bar-track"><div class="bar-fill siemens-accent" style="width:17.1%"><span class="bar-value">6</span></div></div></div>
+    <div class="bar-row"><span class="bar-label">2019</span><div class="bar-track"><div class="bar-fill siemens-accent" style="width:31.4%"><span class="bar-value">11</span></div></div></div>
+    <div class="bar-row"><span class="bar-label">2020</span><div class="bar-track"><div class="bar-fill siemens-accent" style="width:100%"><span class="bar-value">35</span></div></div></div>
+    <div class="bar-row"><span class="bar-label">2021</span><div class="bar-track"><div class="bar-fill siemens-accent" style="width:57.1%"><span class="bar-value">20</span></div></div></div>
+    <div class="bar-row"><span class="bar-label">2022</span><div class="bar-track"><div class="bar-fill siemens-accent" style="width:57.1%"><span class="bar-value">20</span></div></div></div>
+    <div class="bar-row"><span class="bar-label">2023</span><div class="bar-track"><div class="bar-fill siemens-accent" style="width:60.0%"><span class="bar-value">21</span></div></div></div>
+  </div>
+  <p style="margin-top:1rem; font-size:0.8rem; color:var(--text-secondary);">
+    Peak 2020 (35 Anmeldungen), danach stabiles Plateau um 20/Jahr. Insgesamt 133 Anmeldungen (inkl. 2024).
+    Siemens ist der fuehrende deutsche Anmelder im Bereich KI-Diagnostik.
+  </p>
+</section>
+
+<!-- AI-Klassen Detailtrend -->
+<section>
+  <h2>AI-Technologie-Trend nach Klasse und Jahr</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Jahr</th>
+        <th style="text-align:right">G06N 3/<br><small>Neural Nets</small></th>
+        <th style="text-align:right">G06N 20/<br><small>ML</small></th>
+        <th style="text-align:right">G06N 5/<br><small>Knowledge</small></th>
+        <th style="text-align:right">G06N 7/<br><small>Math</small></th>
+        <th style="text-align:right">G06T 1/4<br><small>NN Image</small></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>2015</td><td class="num">9</td><td class="num">13</td><td class="num">4</td><td class="num">4</td><td class="num">--</td></tr>
+      <tr><td>2016</td><td class="num">8</td><td class="num">21</td><td class="num">3</td><td class="num">7</td><td class="num">1</td></tr>
+      <tr><td>2017</td><td class="num">36</td><td class="num">32</td><td class="num">12</td><td class="num">7</td><td class="num">4</td></tr>
+      <tr><td>2018</td><td class="num">64</td><td class="num">45</td><td class="num">12</td><td class="num">14</td><td class="num">3</td></tr>
+      <tr><td>2019</td><td class="num">150</td><td class="num">76</td><td class="num">38</td><td class="num">30</td><td class="num">12</td></tr>
+      <tr><td>2020</td><td class="num">207</td><td class="num">151</td><td class="num">29</td><td class="num">22</td><td class="num">10</td></tr>
+      <tr><td>2021</td><td class="num">203</td><td class="num">139</td><td class="num">32</td><td class="num">12</td><td class="num">16</td></tr>
+      <tr style="font-weight:700"><td>2022</td><td class="num">245</td><td class="num">171</td><td class="num">28</td><td class="num">17</td><td class="num">6</td></tr>
+      <tr><td>2023</td><td class="num">170</td><td class="num">115</td><td class="num">11</td><td class="num">8</td><td class="num">7</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:1rem; font-size:0.8rem; color:var(--text-secondary);">
+    G06N 3/ (Neural Networks) ueberholte G06N 20/ (Machine Learning) ab 2017 und dominiert seitdem.
+    Deep-Learning-Ansaetze sind die zentrale AI-Technologie in der medizinischen Diagnostik.
+  </p>
+</section>
+
+<!-- Interpretation -->
+<section>
+  <h2>Zusammenfassung</h2>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+    <div>
+      <h3 style="font-size:1rem; margin-bottom:0.5rem; color:var(--blue);">Marktdynamik</h3>
+      <ul style="font-size:0.9rem; padding-left:1.2rem;">
+        <li>14,6-faches Wachstum von 2015 (24) bis Peak 2022 (350)</li>
+        <li>Rueckgang 2023 auf 266 -- moeglicherweise Konsolidierung nach dem AI-Hype oder Veroeffentlichungsverzoegerung</li>
+        <li>2024/25 noch unvollstaendig (18 Monate Veroeffentlichungsfrist)</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="font-size:1rem; margin-bottom:0.5rem; color:var(--teal);">Technologie</h3>
+      <ul style="font-size:0.9rem; padding-left:1.2rem;">
+        <li>Neural Networks (G06N 3/) ist die dominierende AI-Technologie (66% der AI-Klassifikationen)</li>
+        <li>Diagnostische Messungen (A61B 5/) und Software-Diagnose (G16H 50/) fuehren auf der Diagnostik-Seite</li>
+        <li>Strahlendiagnostik (CT, Roentgen) und Ultraschall sind starke Wachstumsfelder</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="font-size:1rem; margin-bottom:0.5rem; color:var(--orange);">Wettbewerb</h3>
+      <ul style="font-size:0.9rem; padding-left:1.2rem;">
+        <li>Philips (NL, 128) und Siemens (DE, 123) dominieren mit deutlichem Abstand</li>
+        <li>Suedkorea stark vertreten: Samsung (21), Deep Bio (17), Lunit (14)</li>
+        <li>US-Universitaeten aktiv: UC, Stanford, Johns Hopkins, Sloan Kettering</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="font-size:1rem; margin-bottom:0.5rem; color:var(--purple);">Deutschland</h3>
+      <ul style="font-size:0.9rem; padding-left:1.2rem;">
+        <li>Siemens Healthineers: 123 Anmeldungen, klarer deutscher Champion</li>
+        <li>Bayer AG (18) und Carl Zeiss Meditec (15) als weitere deutsche Akteure</li>
+        <li>Siemens-Peak 2020 korreliert mit CE-Zulassungswelle fuer AI-Diagnostik-Produkte</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Datenquelle: EPO PATSTAT Global (Autumn 2025 Edition) via Google Cloud BigQuery by mtc.<br>
+  Erstellt von mtc.berlin im Feb 2026 &middot; Voranalyse f&uuml;r den Bundesverband Medizintechnologie (BVMed)<br>
+  Im Kontext der Hightech-Strategie Deutschland und WIK-Diskussionsbeitrag Nr. 535
+</footer>
+
+</body>
+</html>
